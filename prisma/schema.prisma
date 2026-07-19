@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   @default("user")
+  phone     String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+  reviews   Review[]
+}
+
+model Category {
+  id    String @id @default(uuid())
+  name  String @unique
+  slug  String @unique
+  games Game[]
+}
+
+model Game {
+  id            String   @id @default(uuid())
+  title         String
+  slug          String   @unique
+  description   String
+  price         Float
+  originalPrice Float?
+  imageUrl      String
+  platform      String   @default("PC")
+  developer     String?
+  publisher     String?
+  releaseDate   String?
+  rating        Float?
+  inStock       Boolean  @default(true)
+  featured      Boolean  @default(false)
+  categoryId    String
+  category      Category @relation(fields: [categoryId], references: [id])
+  keys          ActivationKey[]
+  steamAccounts SteamAccount[]
+  orders        Order[]
+  reviews       Review[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Order {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  gameId        String
+  game          Game     @relation(fields: [gameId], references: [id])
+  status        String   @default("pending")
+  totalAmount   Float
+  paymentMethod String?
+  paymentProof  String?
+  transactionId String?
+  adminNote     String?
+  key           ActivationKey?
+  steamAccount  SteamAccount?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ActivationKey {
+  id         String    @id @default(uuid())
+  key        String    @unique
+  gameId     String
+  game       Game      @relation(fields: [gameId], references: [id])
+  status     String    @default("available")
+  orderId    String?   @unique
+  order      Order?    @relation(fields: [orderId], references: [id])
+  userId     String?
+  assignedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model SteamAccount {
+  id         String    @id @default(uuid())
+  email      String
+  password   String
+  gameId     String
+  game       Game      @relation(fields: [gameId], references: [id])
+  status     String    @default("available")
+  orderId    String?   @unique
+  order      Order?    @relation(fields: [orderId], references: [id])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  gameId    String
+  game      Game     @relation(fields: [gameId], references: [id])
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, gameId])
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String
+  orderId   String?
+  message   String
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
