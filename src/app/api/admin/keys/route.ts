@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { generateActivationKey } from "@/lib/generateKey";
 
+export const runtime = "nodejs";
+
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();

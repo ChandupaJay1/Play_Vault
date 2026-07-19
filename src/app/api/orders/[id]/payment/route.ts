@@ -4,6 +4,8 @@ import { auth } from "@/lib/auth";
 import fs from "fs";
 import path from "path";
 
+export const runtime = "nodejs";
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
