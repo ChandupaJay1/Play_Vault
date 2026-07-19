@@ -23,7 +23,9 @@ export async function GET(request: NextRequest) {
       take: limit,
     });
 
-    return NextResponse.json(reviews);
+    const validReviews = reviews.filter((r) => r.user && r.game);
+
+    return NextResponse.json(validReviews);
   } catch (error) {
     console.error("GET /api/reviews error:", error);
     return NextResponse.json({ error: "Failed to fetch reviews" }, { status: 500 });
