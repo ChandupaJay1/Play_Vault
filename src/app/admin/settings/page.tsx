@@ -206,7 +206,7 @@ export default function AdminSettingsPage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    fetch("/api/admin/settings")
+    fetch("/api/admin/settings", { credentials: "include" })
       .then((r) => r.json())
       .then((data) => {
         setSettings(data);
@@ -230,12 +230,17 @@ export default function AdminSettingsPage() {
       const res = await fetch("/api/admin/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(settings),
       });
-      if (!res.ok) throw new Error("Failed to save");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to save");
+      if (data.settings) {
+        setSettings(data.settings);
+      }
       toast.success(`${section.charAt(0).toUpperCase() + section.slice(1)} settings saved`);
-    } catch {
-      toast.error("Failed to save settings");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save settings");
     } finally {
       setSavingSection(null);
     }
