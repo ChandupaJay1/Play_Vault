@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import fs from "fs";
-import path from "path";
 
 export const runtime = "nodejs";
 
@@ -38,13 +36,8 @@ export async function POST(
     if (file) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-      const fileName = `${Date.now()}-${file.name}`;
-      fs.writeFileSync(path.join(uploadDir, fileName), buffer);
-      paymentProofPath = `/uploads/${fileName}`;
+      const base64 = buffer.toString("base64");
+      paymentProofPath = `data:${file.type};base64,${base64}`;
     }
 
     const updated = await prisma.order.update({
