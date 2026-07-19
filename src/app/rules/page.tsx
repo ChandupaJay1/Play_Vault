@@ -15,18 +15,82 @@ import {
   HelpCircle,
   Clock,
   Ban,
+  LogIn,
+  MonitorOff,
+  CloudOff,
   Wifi,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
-interface GuideItem {
+interface StepItem {
   id: number;
   title: string;
   icon: React.ReactNode;
   content: string[];
+  image: string;
+  important?: string;
 }
 
-const guides: GuideItem[] = [
+const playSteps: StepItem[] = [
+  {
+    id: 1,
+    title: "Get Locked Code",
+    icon: <Key className="w-5 h-5" />,
+    image: "/images/GET LOCK CODE.jpg",
+    content: [
+      "Copy the code from the game page after purchase.",
+      "Paste it into the game page to access the Steam credentials (Email & Password).",
+    ],
+  },
+  {
+    id: 2,
+    title: "Login to Steam",
+    icon: <LogIn className="w-5 h-5" />,
+    image: "/images/login.jpg",
+    content: [
+      "Copy the credentials from the game page (Email & Password).",
+      "Log in to the Steam client using these details.",
+    ],
+    important: "Do not change the password or email.",
+  },
+  {
+    id: 3,
+    title: "Disable Remote Play",
+    icon: <MonitorOff className="w-5 h-5" />,
+    image: "/images/HOW TO DISABLE (REMOTE PLAY).jpg",
+    content: [
+      "Go to Settings > Remote Play.",
+      'Untick "Disable Remote Play".',
+      "This prevents streaming conflicts.",
+    ],
+  },
+  {
+    id: 4,
+    title: "Disable Cloud Saves",
+    icon: <CloudOff className="w-5 h-5" />,
+    image: "/images/HOW TO DISABLE (STEAM CLOUD).jpg",
+    content: [
+      "Go to Settings > Cloud.",
+      'Untick "Disable Steam Cloud".',
+      "This ensures your save files are kept local on your PC and don't overwrite others'.",
+    ],
+  },
+  {
+    id: 5,
+    title: "Go Offline & Play",
+    icon: <Wifi className="w-5 h-5" />,
+    image: "/images/HOW TO PLAY (OFFLINE).jpg",
+    content: [
+      "Click Steam > Go Offline... in the top menu.",
+      "Launch the game.",
+      "You can now play indefinitely without interruptions!",
+    ],
+    important: "If the game has DRM (Denuvo), launch it Online the first time before going offline.",
+  },
+];
+
+const guides = [
   {
     id: 1,
     title: "How to Browse & Buy Games",
@@ -105,44 +169,11 @@ const guides: GuideItem[] = [
       "Enable Steam Guard for additional account security.",
     ],
   },
-  {
-    id: 7,
-    title: "Refund & Cancellation Policy",
-    icon: <AlertTriangle className="w-5 h-5" />,
-    content: [
-      "Refunds are available before the activation key is revealed.",
-      "Once a key is revealed or redeemed, refunds are no longer available.",
-      "To request a refund, contact support with your order ID.",
-      "Refunds are processed within 3-5 business days.",
-      "Cancelled orders will have payment returned to the original method.",
-      "Digital goods are subject to our no-return policy after redemption.",
-    ],
-  },
-  {
-    id: 8,
-    title: "Account & Support",
-    icon: <HelpCircle className="w-5 h-5" />,
-    content: [
-      "Create an account to track orders and save game preferences.",
-      "Use the Dashboard to view all your orders and keys.",
-      "Contact our support team via the Contact page for assistance.",
-      "Include your order ID in all support communications.",
-      "Response time is typically within 24 hours.",
-      "For urgent issues, mention 'URGENT' in your subject line.",
-    ],
-  },
-];
-
-const statusSteps = [
-  { label: "Order Placed", icon: <ShoppingCart className="w-4 h-4" /> },
-  { label: "Payment Uploaded", icon: <CreditCard className="w-4 h-4" /> },
-  { label: "Under Review", icon: <Clock className="w-4 h-4" /> },
-  { label: "Approved", icon: <CheckCircle2 className="w-4 h-4" /> },
-  { label: "Key Delivered", icon: <Key className="w-4 h-4" /> },
 ];
 
 export default function RulesPage() {
-  const [openId, setOpenId] = useState<number | null>(null);
+  const [openStep, setOpenStep] = useState<number | null>(1);
+  const [openGuide, setOpenGuide] = useState<number | null>(null);
 
   return (
     <div className="min-h-screen py-12 px-4">
@@ -165,37 +196,91 @@ export default function RulesPage() {
               </span>
             </h1>
             <p className="text-[#94a3b8] text-lg max-w-2xl mx-auto">
-              Everything you need to know about purchasing, activating, and playing your favorite PC games on PlayVault.
+              Follow these 5 simple steps to start playing your games instantly.
             </p>
           </motion.div>
         </div>
 
-        {/* Order Status Flow */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="mb-12 p-6 bg-[#0f1019] border border-[#272836] rounded-2xl"
-        >
-          <h2 className="text-lg font-semibold text-white mb-6 text-center">Order Process</h2>
-          <div className="flex items-center justify-between overflow-x-auto gap-2 pb-2">
-            {statusSteps.map((step, i) => (
-              <div key={step.label} className="flex items-center gap-2">
-                <div className="flex flex-col items-center gap-2 min-w-[80px]">
-                  <div className="w-10 h-10 rounded-full bg-[#f97316]/10 border border-[#f97316]/30 flex items-center justify-center text-[#f97316]">
-                    {step.icon}
+        {/* How to Play Steps */}
+        <div className="space-y-4 mb-16">
+          {playSteps.map((step, i) => (
+            <motion.div
+              key={step.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * i, duration: 0.3 }}
+              className="bg-[#0f1019]/80 border border-[#272836] rounded-2xl overflow-hidden transition-all duration-300 hover:border-[#f97316]/30"
+            >
+              <button
+                onClick={() => setOpenStep(openStep === step.id ? null : step.id)}
+                className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-white/5"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#f97316] flex items-center justify-center text-white font-bold text-sm shrink-0">
+                    {step.id}
                   </div>
-                  <span className="text-xs text-[#94a3b8] text-center whitespace-nowrap">{step.label}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#f97316]">{step.icon}</span>
+                    <span className="text-sm font-semibold text-white">{step.title}</span>
+                  </div>
                 </div>
-                {i < statusSteps.length - 1 && (
-                  <ArrowRight className="w-4 h-4 text-[#f97316]/50 shrink-0 mt-[-20px]" />
-                )}
-              </div>
-            ))}
-          </div>
-        </motion.div>
+                <ChevronDown
+                  className={`w-5 h-5 text-[#64748b] transition-transform duration-300 shrink-0 ${
+                    openStep === step.id ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
 
-        {/* Guides */}
+              <AnimatePresence>
+                {openStep === step.id && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                  >
+                    <div className="px-5 pb-5 pt-2 border-t border-[#272836]">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-3">
+                          {step.content.map((item, j) => (
+                            <li key={j} className="flex items-start gap-3 text-sm text-[#94a3b8] leading-relaxed list-none">
+                              <CheckCircle2 className="w-4 h-4 text-[#f97316] shrink-0 mt-0.5" />
+                              {item}
+                            </li>
+                          ))}
+                          {step.important && (
+                            <div className="flex items-start gap-3 text-sm text-[#eab308] leading-relaxed mt-3 p-3 bg-[#eab308]/5 border border-[#eab308]/20 rounded-lg">
+                              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                              {step.important}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-center">
+                          <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-[#272836]">
+                            <Image
+                              src={step.image}
+                              alt={step.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Additional Guides */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">
+            Additional Guides
+          </h2>
+        </div>
+
         <div className="space-y-3">
           {guides.map((guide, i) => (
             <motion.div
@@ -206,7 +291,7 @@ export default function RulesPage() {
               className="bg-[#0f1019]/80 border border-[#272836] rounded-xl overflow-hidden transition-all duration-300 hover:border-white/10"
             >
               <button
-                onClick={() => setOpenId(openId === guide.id ? null : guide.id)}
+                onClick={() => setOpenGuide(openGuide === guide.id ? null : guide.id)}
                 className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-white/5"
               >
                 <div className="flex items-center gap-3">
@@ -219,13 +304,13 @@ export default function RulesPage() {
                 </div>
                 <ChevronDown
                   className={`w-5 h-5 text-[#64748b] transition-transform duration-300 shrink-0 ${
-                    openId === guide.id ? "rotate-180" : ""
+                    openGuide === guide.id ? "rotate-180" : ""
                   }`}
                 />
               </button>
 
               <AnimatePresence>
-                {openId === guide.id && (
+                {openGuide === guide.id && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
@@ -267,7 +352,7 @@ export default function RulesPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#eab308] mt-1">•</span>
-                  Keys are region-locked to specific regions. Check game details before purchasing.
+                  Do NOT change the Steam account password or email — you will lose access.
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#eab308] mt-1">•</span>
@@ -275,7 +360,11 @@ export default function RulesPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#eab308] mt-1">•</span>
-                  Internet connection may be required for initial game activation.
+                  If the game has DRM (Denuvo), launch it Online the first time before going offline.
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#eab308] mt-1">•</span>
+                  Keep Steam in Offline Mode to avoid conflicts with other users on the same account.
                 </li>
               </ul>
             </div>

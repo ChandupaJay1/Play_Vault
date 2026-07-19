@@ -53,10 +53,10 @@ const categories = [
 ];
 
 const steps = [
-  { icon: Gamepad2, title: "Browse", desc: "Explore thousands of PC games across every genre" },
-  { icon: Zap, title: "Buy", desc: "Purchase your favorite games at unbeatable prices" },
-  { icon: CheckCircle, title: "Verify Payment", desc: "Upload proof of payment for quick verification" },
-  { icon: Download, title: "Get Key", desc: "Receive your activation key instantly after approval" },
+  { icon: Gamepad2, title: "Browse & Buy", desc: "Find your favorite games and complete your purchase" },
+  { icon: Zap, title: "Upload Payment", desc: "Upload proof of payment for quick manual verification" },
+  { icon: CheckCircle, title: "Get Credentials", desc: "Receive your Steam activation key and account credentials" },
+  { icon: Download, title: "Play Offline", desc: "Login, disable Remote Play & Cloud, go offline and enjoy" },
 ];
 
 const stats = [
