@@ -60,11 +60,6 @@ const defaultSettings: SiteSettings = {
 
 export async function GET() {
   try {
-    const session = await auth();
-    if (!session?.user || (session.user as { role?: string }).role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const row = await prisma.setting.findUnique({ where: { key: SETTINGS_KEY } });
     if (!row) {
       return NextResponse.json(defaultSettings);
