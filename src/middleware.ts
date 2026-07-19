@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const token = req.cookies.get("authjs.session-token")?.value;
+  const token = req.cookies.get("__Secure-authjs.session-token")?.value || req.cookies.get("authjs.session-token")?.value;
 
   const isAdminRoute =
     pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
