@@ -123,3 +123,25 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user || (session.user as { role?: string }).role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "id is required" }, { status: 400 });
+    }
+
+    await prisma.activationKey.delete({ where: { id } });
+    return NextResponse.json({ success: true, message: "Key deleted" });
+  } catch (error) {
+    console.error("DELETE /api/admin/keys error:", error);
+    return NextResponse.json({ error: "Failed to delete key" }, { status: 500 });
+  }
+}
