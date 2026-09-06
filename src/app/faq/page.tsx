@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Search, HelpCircle } from "lucide-react";
 
@@ -89,8 +89,29 @@ export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [contactEmail, setContactEmail] = useState("support@playvault.com");
 
-  const filteredFAQs = faqs.filter((faq) => {
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.general?.contactEmail) {
+          setContactEmail(data.general.contactEmail);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const items = faqs.map((faq) =>
+    faq.question === "How do I contact support?"
+      ? {
+          ...faq,
+          answer: `You can reach our support team through the Contact page or by emailing ${contactEmail}. Include your order ID for faster assistance. We respond within 24 hours on business days.`,
+        }
+      : faq
+  );
+
+  const filteredFAQs = items.filter((faq) => {
     const matchesCategory = selectedCategory === "All" || faq.category === selectedCategory;
     const matchesSearch =
       faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||

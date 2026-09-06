@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 import {
   LayoutDashboard,
@@ -39,11 +40,16 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { data: session } = useSession();
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
     return pathname.startsWith(href);
   };
+
+  const userName = session?.user?.name || "Admin";
+  const userEmail = session?.user?.email || "admin@playvault.com";
+  const userInitial = userName.charAt(0).toUpperCase();
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
@@ -99,14 +105,14 @@ export default function AdminLayout({
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-accent-primary/20 flex items-center justify-center">
               <span className="text-xs font-bold text-accent-primary-light">
-                A
+                {userInitial}
               </span>
             </div>
             <div className="min-w-0">
               <p className="text-sm font-medium text-text-primary truncate">
-                Admin
+                {userName}
               </p>
-              <p className="text-xs text-text-muted truncate">admin@playvault.com</p>
+              <p className="text-xs text-text-muted truncate">{userEmail}</p>
             </div>
           </div>
         </div>

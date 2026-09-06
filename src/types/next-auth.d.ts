@@ -1,0 +1,41 @@
+import type { DefaultSession } from "@auth/core/types";
+
+declare module "@auth/core/types" {
+  interface Session {
+    user: {
+      id?: string;
+      role?: string;
+      avatar?: string | null;
+    } & DefaultSession["user"];
+  }
+
+  interface User {
+    id?: string;
+    role?: string;
+    avatar?: string | null;
+  }
+}
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id?: string;
+      role?: string;
+      avatar?: string | null;
+    } & DefaultSession["user"];
+  }
+
+  interface User {
+    id?: string;
+    role?: string;
+    avatar?: string | null;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id?: string;
+    role?: string;
+    avatar?: string | null;
+  }
+}

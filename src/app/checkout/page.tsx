@@ -46,7 +46,7 @@ export default function CheckoutPage() {
   const [payment, setPayment] = useState<PaymentSettings>(defaultPayment);
 
   useEffect(() => {
-    fetch("/api/admin/settings", { credentials: "include" })
+    fetch("/api/settings")
       .then((r) => r.json())
       .then((data) => {
         if (data?.payment) setPayment(data.payment);

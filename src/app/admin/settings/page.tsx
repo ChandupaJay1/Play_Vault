@@ -418,12 +418,12 @@ export default function AdminSettingsPage() {
           />
         </div>
         <Field
-          label="SMTP Username (read-only)"
+          label="SMTP Username / Email"
+          type="email"
           value={settings.smtp.smtpUser}
-          onChange={() => {}}
-          placeholder="Configured in environment"
-          readOnly
-          helpText="For security, SMTP credentials are managed via environment variables."
+          onChange={(v) => update("smtp", "smtpUser", v)}
+          placeholder="your-email@gmail.com"
+          helpText="Email address used for outgoing notifications."
         />
         <div className="p-3 rounded-lg bg-[#eab308]/5 border border-[#eab308]/20">
           <p className="text-xs text-[#eab308]">

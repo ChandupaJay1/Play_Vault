@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mail, MessageSquare, Send, Loader2, CheckCircle2, User, FileText } from "lucide-react";
 import toast from "react-hot-toast";
@@ -13,6 +13,18 @@ export default function ContactPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [contactEmail, setContactEmail] = useState("support@playvault.com");
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.general?.contactEmail) {
+          setContactEmail(data.general.contactEmail);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,7 +90,9 @@ export default function ContactPage() {
                 <Mail className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-semibold text-white mb-1">Email Us</h3>
-              <p className="text-sm text-[#64748b]">support@playvault.com</p>
+              <a href={`mailto:${contactEmail}`} className="text-sm text-[#64748b] hover:text-[#fb923c] transition-colors break-all">
+                {contactEmail}
+              </a>
               <p className="text-xs text-[#64748b] mt-1">Response within 24 hours</p>
             </div>
 
