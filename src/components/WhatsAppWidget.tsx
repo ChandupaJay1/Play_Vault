@@ -10,7 +10,7 @@ export default function WhatsAppWidget() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Replace this with the actual admin WhatsApp number
-  const WHATSAPP_NUMBER = "94770000000";
+  const WHATSAPP_NUMBER = "94773729462";
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
