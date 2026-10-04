@@ -31,6 +31,7 @@ interface Game {
   imageUrl: string;
   rating?: number | null;
   featured?: boolean;
+  isFreeOffer?: boolean;
   category?: { name: string; slug: string } | null;
 }
 
