@@ -21,6 +21,11 @@ const sidebarLinks = [
     icon: ShoppingBag,
   },
   {
+    label: "My Library",
+    href: "/dashboard/library",
+    icon: Gamepad2,
+  },
+  {
     label: "Profile",
     href: "/dashboard/profile",
     icon: User,
