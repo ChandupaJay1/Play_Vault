@@ -433,11 +433,14 @@ export default function LibraryPage() {
                   </div>
                 </div>
               </div>
-              <div className="p-3">
-                <h3 className="text-white text-sm font-medium line-clamp-1 group-hover:text-[#f97316] transition-colors">
+              <div className="p-3 flex flex-col flex-1">
+                <h3
+                  className="text-white text-sm font-medium line-clamp-2 min-h-[40px] group-hover:text-[#f97316] transition-colors"
+                  title={order.game.title}
+                >
                   {order.game.title}
                 </h3>
-                <p className="text-xs text-gray-500 mt-1">{order.game.platform}</p>
+                <p className="text-xs text-gray-500 mt-auto pt-1">{order.game.platform}</p>
               </div>
             </motion.div>
             );

@@ -31,7 +31,7 @@ export default function GameCard({ game }: GameCardProps) {
       <motion.div
         whileHover={{ scale: 1.03 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="group relative overflow-hidden rounded-xl border border-white/10 bg-[#0f1019] transition-shadow duration-300 hover:shadow-[0_0_30px_rgba(249,115,22,0.15)]"
+        className="group relative overflow-hidden rounded-xl border border-white/10 bg-[#0f1019] transition-shadow duration-300 hover:shadow-[0_0_30px_rgba(249,115,22,0.15)] flex flex-col h-full"
       >
         <div className="relative aspect-[3/4] overflow-hidden">
           <Image
@@ -70,8 +70,11 @@ export default function GameCard({ game }: GameCardProps) {
           )}
         </div>
 
-        <div className="p-4">
-          <h3 className="text-sm font-semibold text-white line-clamp-1 group-hover:text-orange-400 transition-colors">
+        <div className="p-4 flex flex-col flex-1">
+          <h3
+            className="text-sm font-semibold text-white line-clamp-2 min-h-[40px] group-hover:text-orange-400 transition-colors"
+            title={title}
+          >
             {title}
           </h3>
 
@@ -93,12 +96,12 @@ export default function GameCard({ game }: GameCardProps) {
             )}
           </div>
 
-          <div className="mt-3 flex items-center gap-2">
-            <span className="text-lg font-bold text-white">
+          <div className="mt-auto pt-3 flex flex-wrap items-baseline gap-2">
+            <span className="text-lg font-bold text-white whitespace-nowrap">
               Rs. {price.toFixed(2)}
             </span>
             {originalPrice && originalPrice > price && (
-              <span className="text-sm text-slate-500 line-through">
+              <span className="text-sm text-slate-500 line-through whitespace-nowrap">
                 Rs. {originalPrice.toFixed(2)}
               </span>
             )}
