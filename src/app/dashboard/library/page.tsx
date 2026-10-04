@@ -34,6 +34,9 @@ interface Order {
   gameId: string;
   status: string;
   game: Game;
+  key?: {
+    status: string;
+  };
 }
 
 interface RedeemResult {
@@ -56,10 +59,33 @@ function UnlockModal({
   onClose: () => void;
 }) {
   const [key, setKey] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(order.key?.status === "used");
   const [result, setResult] = useState<RedeemResult | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  
+  const isAlreadyUnlocked = order.key?.status === "used";
+
+  useEffect(() => {
+    if (isAlreadyUnlocked && !result) {
+      const fetchCredentials = async () => {
+        try {
+          const res = await fetch(`/api/orders/${order.id}/credentials`);
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.error || "Failed to fetch account details");
+          }
+          const data = await res.json();
+          setResult({ game: order.game as any, steam: data.steam });
+        } catch (err) {
+          toast.error(err instanceof Error ? err.message : "Failed to load credentials");
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchCredentials();
+    }
+  }, [order.id, isAlreadyUnlocked, result, order.game]);
 
   const handleRedeem = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,7 +154,14 @@ function UnlockModal({
         </div>
 
         <div className="p-6 overflow-y-auto">
-          {!result && (
+          {loading && isAlreadyUnlocked && !result && (
+            <div className="py-12 flex flex-col items-center justify-center">
+              <Loader2 className="w-8 h-8 text-[#f97316] animate-spin mb-4" />
+              <p className="text-gray-400">Loading your credentials...</p>
+            </div>
+          )}
+
+          {!isAlreadyUnlocked && !result && (
             <form onSubmit={handleRedeem} className="space-y-4">
               <div className="flex items-center gap-4 mb-6">
                 <img
@@ -303,9 +336,9 @@ export default function LibraryPage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-[#111127] rounded-xl border border-white/5 p-4 animate-pulse h-64" />
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div key={i} className="bg-[#111127] rounded-xl border border-white/5 p-4 animate-pulse aspect-[3/4]" />
         ))}
       </div>
     );
@@ -359,8 +392,11 @@ export default function LibraryPage() {
           </a>
         </motion.div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {orders.map((order, index) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {orders.map((order, index) => {
+            const isUnlocked = order.key?.status === "used";
+            
+            return (
             <motion.div
               key={order.id}
               initial={{ opacity: 0, y: 20 }}
@@ -383,19 +419,29 @@ export default function LibraryPage() {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                   <div className="w-full text-center py-2 bg-[#f97316] text-white font-medium rounded-lg text-sm flex items-center justify-center gap-2 shadow-lg">
-                    <Key className="w-4 h-4" />
-                    Unlock Details
+                    {isUnlocked ? (
+                      <>
+                        <Eye className="w-4 h-4" />
+                        View Details
+                      </>
+                    ) : (
+                      <>
+                        <Key className="w-4 h-4" />
+                        Unlock Details
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
-              <div className="p-4">
-                <h3 className="text-white font-medium truncate group-hover:text-[#f97316] transition-colors">
+              <div className="p-3">
+                <h3 className="text-white text-sm font-medium line-clamp-1 group-hover:text-[#f97316] transition-colors">
                   {order.game.title}
                 </h3>
-                <p className="text-sm text-gray-500 mt-1">{order.game.platform}</p>
+                <p className="text-xs text-gray-500 mt-1">{order.game.platform}</p>
               </div>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
       )}
 

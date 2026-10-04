@@ -162,7 +162,7 @@ export default function HomePage() {
           </AnimatedSection>
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="bg-[#0f1019] border border-[#272836] rounded-xl overflow-hidden animate-pulse">
                   <div className="aspect-[16/10] bg-[#181926]" />
@@ -175,7 +175,7 @@ export default function HomePage() {
               ))}
             </div>
           ) : featuredGames.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {featuredGames.map((game, i) => (
                 <AnimatedSection key={game.id} delay={i * 0.1}>
                   <GameCard game={game} />
