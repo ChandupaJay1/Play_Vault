@@ -29,7 +29,7 @@ const faqs: FAQItem[] = [
   {
     category: "Payment",
     question: "What payment methods do you accept?",
-    answer: "We currently accept manual bank transfers and UPI payments. We are working on adding more payment options in the future. All payments are processed manually for maximum security.",
+    answer: "We currently accept manual bank transfers. We are working on adding more payment options in the future. All payments are processed manually for maximum security.",
   },
   {
     category: "Payment",

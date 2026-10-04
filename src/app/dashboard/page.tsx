@@ -289,20 +289,8 @@ function UploadPaymentModal({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              Payment Method
-            </label>
-            <select
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full bg-[#0a0a1a] border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#f97316]"
-            >
-              <option value="bank_transfer">Bank Transfer</option>
-              <option value="e_wallet">E-Wallet</option>
-              <option value="crypto">Cryptocurrency</option>
-              <option value="other">Other</option>
-            </select>
+          <div className="hidden">
+            <input type="hidden" value={paymentMethod} />
           </div>
 
           <div>

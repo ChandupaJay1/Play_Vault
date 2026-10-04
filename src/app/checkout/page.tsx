@@ -147,12 +147,6 @@ export default function CheckoutPage() {
                     <span className="text-[#f1f5f9]">{payment.ifscCode}</span>
                   </div>
                 )}
-                {payment.upiId && (
-                  <div className="flex justify-between">
-                    <span className="text-[#64748b]">UPI ID:</span>
-                    <span className="text-[#f1f5f9]">{payment.upiId}</span>
-                  </div>
-                )}
                 <div className="flex justify-between items-center">
                   <span className="text-[#64748b]">Reference:</span>
                   <div className="flex items-center gap-2">

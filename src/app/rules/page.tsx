@@ -111,9 +111,9 @@ const guides = [
     title: "Payment Process (Manual Transfer)",
     icon: <CreditCard className="w-5 h-5" />,
     content: [
-      "We accept manual bank transfers and UPI payments.",
-      "After placing your order, you will see our payment details.",
-      "Transfer the exact amount to the provided bank account or UPI ID.",
+      "We accept manual bank transfers.",
+      "After placing your order, you will see our bank details.",
+      "Transfer the exact amount to the provided bank account.",
       "Take a screenshot or photo of the payment confirmation.",
       "Upload the payment proof in your Dashboard under 'My Orders'.",
       "Include your transaction/reference ID for faster verification.",
