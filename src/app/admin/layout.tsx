@@ -20,6 +20,7 @@ import {
   Monitor,
   Mail,
   Gift,
+  Star,
 } from "lucide-react";
 
 const navItems = [
@@ -32,6 +33,7 @@ const navItems = [
   { href: "/admin/keys", label: "Activation Keys", icon: Key },
   { href: "/admin/steam", label: "Steam Accounts", icon: Monitor },
   { href: "/admin/messages", label: "Messages", icon: Mail },
+  { href: "/admin/reviews", label: "Reviews", icon: Star },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
