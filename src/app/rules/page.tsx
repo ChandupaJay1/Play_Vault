@@ -35,12 +35,13 @@ interface StepItem {
 const playSteps: StepItem[] = [
   {
     id: 1,
-    title: "Get Locked Code",
+    title: "Get Activation Key & Unlock",
     icon: <Key className="w-5 h-5" />,
-    image: "/images/GET LOCK CODE.jpg",
+    image: "/images/unlock-details.png",
     content: [
-      "Copy the code from the game page after purchase.",
-      "Paste it into the game page to access the Steam credentials (Email & Password).",
+      "Go to your Dashboard > My Library.",
+      "Click 'Details' on your purchased game to find and copy your Activation Key.",
+      "Click the 'Unlock Details' button, paste your key, and reveal the Steam Email & Password.",
     ],
   },
   {
@@ -261,7 +262,7 @@ export default function RulesPage() {
                               src={step.image}
                               alt={step.title}
                               fill
-                              className="object-cover"
+                              className="object-contain bg-black/50"
                             />
                           </div>
                         </div>
