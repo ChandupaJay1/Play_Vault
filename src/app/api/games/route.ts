@@ -11,7 +11,14 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
     const featured = searchParams.get("featured");
 
+    const session = await auth();
+    const isAdmin = session?.user && (session.user as { role?: string }).role === "admin";
+
     const where: Record<string, unknown> = {};
+
+    if (!isAdmin) {
+      where.isActive = true;
+    }
 
     if (category) {
       where.category = { slug: category };

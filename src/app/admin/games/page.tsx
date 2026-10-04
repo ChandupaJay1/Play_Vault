@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Pencil, Trash2, X, Search, Key } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Search, Key, Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface Category {
@@ -26,6 +26,7 @@ interface Game {
   rating: number | null;
   inStock: boolean;
   featured: boolean;
+  isActive: boolean;
   categoryId: string;
   category: Category;
   keys?: { id: string; status: string }[];
@@ -158,6 +159,23 @@ export default function AdminGamesPage() {
     }
   };
 
+  const handleToggleActive = async (game: Game) => {
+    try {
+      const res = await fetch(`/api/games/${game.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: !game.isActive }),
+      });
+      if (!res.ok) throw new Error("Failed to toggle status");
+      
+      const updated = await res.json();
+      setGames((prev) => prev.map((g) => (g.id === game.id ? updated : g)));
+      toast.success(updated.isActive ? "Game activated (visible on site)" : "Game deactivated (hidden from site)");
+    } catch {
+      toast.error("Failed to toggle status");
+    }
+  };
+
   const availableKeys = (game: Game) =>
     game.keys?.filter((k) => k.status === "available").length || 0;
 
@@ -235,9 +253,14 @@ export default function AdminGamesPage() {
                       )}
                     </td>
                     <td className="px-5 py-3">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${game.inStock ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
-                        {game.inStock ? "In Stock" : "Out of Stock"}
-                      </span>
+                      <div className="flex flex-col gap-1 items-start">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${game.inStock ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
+                          {game.inStock ? "In Stock" : "Out of Stock"}
+                        </span>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${game.isActive ? "bg-blue-500/20 text-blue-400" : "bg-gray-500/20 text-gray-400"}`}>
+                          {game.isActive ? "Active (Visible)" : "Deactivated"}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-1 text-sm text-text-secondary">
@@ -247,6 +270,13 @@ export default function AdminGamesPage() {
                     </td>
                     <td className="px-5 py-3">
                       <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleToggleActive(game)}
+                          className="p-1.5 rounded-lg hover:bg-surface-hover text-text-muted hover:text-blue-400 transition-colors"
+                          title={game.isActive ? "Deactivate Game" : "Activate Game"}
+                        >
+                          {game.isActive ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                        </button>
                         <button
                           onClick={() => openEdit(game)}
                           className="p-1.5 rounded-lg hover:bg-surface-hover text-text-muted hover:text-accent-primary-light transition-colors"
