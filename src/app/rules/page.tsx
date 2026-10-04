@@ -37,7 +37,7 @@ const playSteps: StepItem[] = [
     id: 1,
     title: "Get Activation Key & Unlock",
     icon: <Key className="w-5 h-5" />,
-    image: "/images/unlock-details.png",
+    image: "/images/1st.png",
     content: [
       "Go to your Dashboard > My Library.",
       "Click 'Details' on your purchased game to find and copy your Activation Key.",
@@ -175,6 +175,7 @@ const guides = [
 export default function RulesPage() {
   const [openStep, setOpenStep] = useState<number | null>(1);
   const [openGuide, setOpenGuide] = useState<number | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen py-12 px-4">
@@ -257,14 +258,12 @@ export default function RulesPage() {
                           )}
                         </div>
                         <div className="flex items-center justify-center">
-                          <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-[#272836]">
-                            <Image
-                              src={step.image}
-                              alt={step.title}
-                              fill
-                              className="object-contain bg-black/50"
-                            />
-                          </div>
+                          <img
+                            src={step.image}
+                            alt={step.title}
+                            onClick={() => setSelectedImage(step.image)}
+                            className="w-full rounded-xl border border-[#272836] cursor-pointer hover:opacity-80 transition-opacity object-contain"
+                          />
                         </div>
                       </div>
                     </div>
@@ -389,6 +388,35 @@ export default function RulesPage() {
           </Link>
         </motion.div>
       </div>
+
+      {/* Image Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm cursor-pointer"
+          >
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 p-2 text-white/50 hover:text-white bg-black/50 rounded-full transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <motion.img
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              src={selectedImage}
+              alt="Expanded view"
+              className="max-w-full max-h-[90vh] rounded-xl border border-[#272836] shadow-2xl"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
