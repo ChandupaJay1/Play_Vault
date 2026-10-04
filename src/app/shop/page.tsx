@@ -140,11 +140,11 @@ function ShopContent() {
             {(showFilters || isMobile !== null) && (
               <motion.aside
                 initial={false}
-                className={`${showFilters ? "fixed inset-0 z-40 bg-[#0a0a1a]/80 md:relative md:bg-transparent md:z-auto" : "hidden"} md:block md:w-56 shrink-0`}
+                className={`${showFilters ? "fixed inset-0 z-40 bg-[#0a0a1a]/80 flex items-center justify-center p-4 md:relative md:bg-transparent md:z-auto md:p-0" : "hidden"} md:block md:w-56 shrink-0`}
                 onClick={() => setShowFilters(false)}
               >
                 <div
-                  className="bg-[#111127] border border-[#2a2a4a] rounded-xl p-4 md:sticky md:top-24"
+                  className="bg-[#111127] border border-[#2a2a4a] rounded-xl p-4 md:sticky md:top-24 w-full max-w-xs md:max-w-none md:w-auto"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="flex items-center justify-between mb-4">
