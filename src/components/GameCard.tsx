@@ -15,6 +15,7 @@ interface GameData {
   category?: { name: string; slug: string } | string | null;
   rating?: number | null;
   inStock?: boolean;
+  isFreeOffer?: boolean;
 }
 
 interface GameCardProps {
@@ -22,7 +23,7 @@ interface GameCardProps {
 }
 
 export default function GameCard({ game }: GameCardProps) {
-  const { title, slug, price, originalPrice, imageUrl, category, rating, inStock = true } = game;
+  const { title, slug, price, originalPrice, imageUrl, category, rating, inStock = true, isFreeOffer = false } = game;
   const stars = rating ? Math.round(rating) : 0;
   const categoryName = typeof category === "string" ? category : category?.name ?? "";
 
@@ -61,10 +62,18 @@ export default function GameCard({ game }: GameCardProps) {
             </span>
           </div>
 
-          {originalPrice && originalPrice > price && (
+          {originalPrice && originalPrice > price && !isFreeOffer && (
             <div className="absolute right-3 top-3">
               <span className="rounded-md bg-green-600/90 px-2 py-1 text-[10px] font-bold text-white">
                 -{Math.round(((originalPrice - price) / originalPrice) * 100)}%
+              </span>
+            </div>
+          )}
+
+          {isFreeOffer && (
+            <div className="absolute right-3 top-3">
+              <span className="rounded-md bg-gradient-to-r from-green-500 to-emerald-600 px-2 py-1 text-[10px] font-bold text-white shadow-sm shadow-green-500/50">
+                FREE OFFER
               </span>
             </div>
           )}
@@ -97,13 +106,21 @@ export default function GameCard({ game }: GameCardProps) {
           </div>
 
           <div className="mt-auto pt-3 flex flex-wrap items-baseline gap-2">
-            <span className="text-lg font-bold text-white whitespace-nowrap">
-              Rs. {price.toFixed(2)}
-            </span>
-            {originalPrice && originalPrice > price && (
-              <span className="text-sm text-slate-500 line-through whitespace-nowrap">
-                Rs. {originalPrice.toFixed(2)}
+            {isFreeOffer ? (
+              <span className="text-lg font-bold text-green-400 whitespace-nowrap">
+                FREE
               </span>
+            ) : (
+              <>
+                <span className="text-lg font-bold text-white whitespace-nowrap">
+                  Rs. {price.toFixed(2)}
+                </span>
+                {originalPrice && originalPrice > price && (
+                  <span className="text-sm text-slate-500 line-through whitespace-nowrap">
+                    Rs. {originalPrice.toFixed(2)}
+                  </span>
+                )}
+              </>
             )}
           </div>
         </div>

@@ -24,6 +24,7 @@ import {
   EyeOff,
   Shield,
   MessageSquare,
+  Gift,
 } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { useSession } from "next-auth/react";
@@ -44,6 +45,7 @@ interface Game {
   releaseDate?: string | null;
   rating?: number | null;
   inStock?: boolean;
+  isFreeOffer?: boolean;
   category?: { name: string; slug: string } | null;
 }
 
@@ -88,6 +90,7 @@ export default function GameDetailPage() {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [hasPurchased, setHasPurchased] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
+  const [claimingOffer, setClaimingOffer] = useState(false);
 
   useEffect(() => {
     fetch("/api/games")
@@ -174,6 +177,32 @@ export default function GameDetailPage() {
       });
     }
     router.push("/checkout");
+  };
+
+  const handleClaimFreeOffer = async () => {
+    if (!session) {
+      router.push("/login");
+      return;
+    }
+    if (!game) return;
+    setClaimingOffer(true);
+    try {
+      const res = await fetch("/api/redeem-free-offer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gameId: game.id }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to claim free offer");
+      }
+      toast.success("Free offer claimed successfully! Redirecting to your library...");
+      router.push("/dashboard/library");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to claim free offer");
+    } finally {
+      setClaimingOffer(false);
+    }
   };
 
   const handleRedeem = async (e: React.FormEvent) => {
@@ -329,9 +358,18 @@ export default function GameDetailPage() {
             )}
 
             <div className="flex items-baseline gap-3">
-              <span className="text-4xl font-black text-[#f1f5f9]">Rs. {game.price.toFixed(2)}</span>
-              {game.originalPrice && (
-                <span className="text-lg text-[#64748b] line-through">Rs. {game.originalPrice.toFixed(2)}</span>
+              {game.isFreeOffer ? (
+                <span className="text-4xl font-black text-[#10b981] flex items-center gap-2">
+                  <Gift className="w-8 h-8" />
+                  FREE OFFER
+                </span>
+              ) : (
+                <>
+                  <span className="text-4xl font-black text-[#f1f5f9]">Rs. {game.price.toFixed(2)}</span>
+                  {game.originalPrice && (
+                    <span className="text-lg text-[#64748b] line-through">Rs. {game.originalPrice.toFixed(2)}</span>
+                  )}
+                </>
               )}
             </div>
 
@@ -376,28 +414,52 @@ export default function GameDetailPage() {
             </div>
 
             <div className="flex flex-col gap-3 pt-2">
-              <button
-                onClick={handleAddToCart}
-                disabled={inCart || game.inStock === false}
-                className={`w-full py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
-                  inCart
-                    ? "bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30"
-                    : "btn-gaming"
-                } disabled:opacity-50`}
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  <ShoppingCart className="w-5 h-5" />
-                  {inCart ? "Already in Cart" : "Add to Cart"}
-                </span>
-              </button>
-              <button
-                onClick={handleBuyNow}
-                disabled={game.inStock === false}
-                className="w-full py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 border border-[#eab308] text-[#eab308] hover:bg-[#eab308]/10 transition-all disabled:opacity-50"
-              >
-                <Zap className="w-5 h-5" />
-                Buy Now
-              </button>
+              {game.isFreeOffer ? (
+                <button
+                  onClick={handleClaimFreeOffer}
+                  disabled={claimingOffer || game.inStock === false || hasPurchased}
+                  className="w-full py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 bg-gradient-to-r from-[#10b981] to-[#059669] text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  {claimingOffer ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : hasPurchased ? (
+                    <>
+                      <Check className="w-5 h-5" />
+                      Already Claimed
+                    </>
+                  ) : (
+                    <>
+                      <Gift className="w-5 h-5" />
+                      Claim Free Offer
+                    </>
+                  )}
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={inCart || game.inStock === false}
+                    className={`w-full py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
+                      inCart
+                        ? "bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30"
+                        : "btn-gaming"
+                    } disabled:opacity-50`}
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      <ShoppingCart className="w-5 h-5" />
+                      {inCart ? "Already in Cart" : "Add to Cart"}
+                    </span>
+                  </button>
+                  <button
+                    onClick={handleBuyNow}
+                    disabled={game.inStock === false}
+                    className="w-full py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 border border-[#eab308] text-[#eab308] hover:bg-[#eab308]/10 transition-all disabled:opacity-50"
+                  >
+                    <Zap className="w-5 h-5" />
+                    Buy Now
+                  </button>
+                </>
+              )}
             </div>
           </motion.div>
         </div>

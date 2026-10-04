@@ -303,6 +303,11 @@ export default function LibraryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  
+  // Redeem State
+  const [showRedeemModal, setShowRedeemModal] = useState(false);
+  const [redeemKey, setRedeemKey] = useState("");
+  const [redeemLoading, setRedeemLoading] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -362,13 +367,22 @@ export default function LibraryPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white flex items-center gap-2">
-          <Library className="w-5 h-5 text-[#f97316]" />
-          My Library
-        </h2>
-        <span className="text-sm text-gray-500">
-          {orders.length} Game{orders.length !== 1 ? "s" : ""}
-        </span>
+        <div>
+          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <Library className="w-5 h-5 text-[#f97316]" />
+            My Library
+          </h2>
+          <span className="text-sm text-gray-500">
+            {orders.length} Game{orders.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+        <button
+          onClick={() => setShowRedeemModal(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#f97316] text-white text-sm font-medium hover:bg-[#ea580c] transition-colors shadow-lg shadow-[#f97316]/20"
+        >
+          <Key className="w-4 h-4" />
+          Redeem Gift Key
+        </button>
       </div>
 
       {orders.length === 0 ? (
@@ -454,6 +468,92 @@ export default function LibraryPage() {
             order={selectedOrder}
             onClose={() => setSelectedOrder(null)}
           />
+        )}
+        
+        {/* Redeem Gift Key Modal */}
+        {showRedeemModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowRedeemModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#111127] rounded-xl border border-white/10 w-full max-w-md overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between p-6 border-b border-white/5">
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <Key className="w-5 h-5 text-[#f97316]" />
+                  Redeem Gift Key
+                </h3>
+                <button
+                  onClick={() => setShowRedeemModal(false)}
+                  className="p-1 rounded-md hover:bg-white/10 text-gray-400 hover:text-white"
+                >
+                  <XCircle className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form
+                className="p-6 space-y-4"
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (!redeemKey.trim()) return;
+                  setRedeemLoading(true);
+                  try {
+                    const res = await fetch("/api/redeem", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ key: redeemKey.trim() }),
+                    });
+                    if (!res.ok) {
+                      const data = await res.json();
+                      throw new Error(data.error || "Failed to redeem key");
+                    }
+                    toast.success("Game redeemed successfully!");
+                    window.location.reload(); // Reload to show the new game in the library
+                  } catch (err) {
+                    toast.error(err instanceof Error ? err.message : "Failed to redeem key");
+                  } finally {
+                    setRedeemLoading(false);
+                  }
+                }}
+              >
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Enter your 25-character activation key
+                  </label>
+                  <input
+                    type="text"
+                    value={redeemKey}
+                    onChange={(e) => setRedeemKey(e.target.value)}
+                    placeholder="PV-XXXXX-XXXXX-XXXXX"
+                    className="w-full px-4 py-3 bg-[#0a0a1a] border border-white/10 rounded-xl text-white font-mono text-center placeholder:text-gray-600 focus:outline-none focus:border-[#f97316] transition-colors"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={redeemLoading || !redeemKey.trim()}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-[#f97316] to-[#eab308] text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {redeemLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Redeeming...
+                    </>
+                  ) : (
+                    "Redeem Key"
+                  )}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

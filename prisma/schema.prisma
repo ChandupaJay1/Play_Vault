@@ -42,6 +42,7 @@ model Game {
   rating        Float?
   inStock       Boolean  @default(true)
   featured      Boolean  @default(false)
+  isFreeOffer   Boolean  @default(false)
   categoryId    String
   category      Category @relation(fields: [categoryId], references: [id])
   keys          ActivationKey[]

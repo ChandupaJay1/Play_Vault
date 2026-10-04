@@ -54,6 +54,7 @@ export default function AdminKeysPage() {
   const [selectedGameId, setSelectedGameId] = useState("");
   const [keysInput, setKeysInput] = useState("");
   const [generateCount, setGenerateCount] = useState(5);
+  const [pasteMultiplier, setPasteMultiplier] = useState(1);
   const [adding, setAdding] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -243,7 +244,8 @@ export default function AdminKeysPage() {
     const keysList = keysInput
       .split("\n")
       .map((k) => k.trim())
-      .filter((k) => k.length > 0);
+      .filter((k) => k.length > 0)
+      .flatMap((k) => Array(pasteMultiplier).fill(k));
 
     if (keysList.length === 0) {
       toast.error("Please enter at least one key");
@@ -1024,8 +1026,31 @@ export default function AdminKeysPage() {
                       className="w-full px-3 py-2.5 bg-[#05050a] border border-[#272836] rounded-lg text-text-primary text-sm font-mono placeholder:text-text-muted focus:border-[#f97316] outline-none resize-none"
                     />
                     <p className="text-xs text-text-muted mt-1.5">
-                      {keysInput.split("\n").filter((l) => l.trim()).length} keys detected
+                      {keysInput.split("\n").filter((l) => l.trim()).length} unique keys detected
                     </p>
+                    <div className="mt-4">
+                      <label className="block text-xs font-medium text-text-muted mb-1.5">
+                        Copies per key *
+                      </label>
+                      <select
+                        value={pasteMultiplier}
+                        onChange={(e) => setPasteMultiplier(parseInt(e.target.value))}
+                        className="w-full px-3 py-2.5 bg-[#05050a] border border-[#272836] rounded-lg text-text-primary text-sm focus:border-[#f97316] outline-none"
+                      >
+                        <option value={1}>1 Copy (Default)</option>
+                        <option value={5}>5 Copies</option>
+                        <option value={10}>10 Copies</option>
+                        <option value={15}>15 Copies</option>
+                        <option value={20}>20 Copies</option>
+                        <option value={25}>25 Copies</option>
+                        <option value={30}>30 Copies</option>
+                        <option value={40}>40 Copies</option>
+                        <option value={50}>50 Copies</option>
+                      </select>
+                      <p className="text-xs text-text-muted mt-1.5">
+                        Total to add: {keysInput.split("\n").filter((l) => l.trim()).length * pasteMultiplier}
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>

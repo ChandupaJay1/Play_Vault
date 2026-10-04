@@ -55,6 +55,7 @@ export default function AdminSteamPage() {
   const [selectedGameId, setSelectedGameId] = useState("");
   const [accountsInput, setAccountsInput] = useState("");
   const [generateCount, setGenerateCount] = useState(5);
+  const [pasteMultiplier, setPasteMultiplier] = useState(1);
   const [adding, setAdding] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -232,9 +233,10 @@ export default function AdminSteamPage() {
           .split("\n")
           .map((l) => l.trim())
           .filter((l) => l.length > 0);
-        const parsed = lines.map((line) => {
+        const parsed = lines.flatMap((line) => {
           const [email, password] = line.split("|").map((s) => s.trim());
-          return { email: email || "", password: password || "" };
+          const acc = { email: email || "", password: password || "" };
+          return Array(pasteMultiplier).fill(acc);
         });
 
         if (parsed.length === 0) {
@@ -1072,8 +1074,31 @@ export default function AdminSteamPage() {
                       className="w-full px-3 py-2.5 bg-[#05050a] border border-[#272836] rounded-lg text-text-primary text-sm font-mono placeholder:text-text-muted focus:border-[#f97316] outline-none resize-none"
                     />
                     <p className="text-xs text-text-muted mt-1.5">
-                      {accountsInput.split("\n").filter((l) => l.trim()).length} accounts detected
+                      {accountsInput.split("\n").filter((l) => l.trim()).length} unique accounts detected
                     </p>
+                    <div className="mt-4">
+                      <label className="block text-xs font-medium text-text-muted mb-1.5">
+                        Copies per account (for shared offline access) *
+                      </label>
+                      <select
+                        value={pasteMultiplier}
+                        onChange={(e) => setPasteMultiplier(parseInt(e.target.value))}
+                        className="w-full px-3 py-2.5 bg-[#05050a] border border-[#272836] rounded-lg text-text-primary text-sm focus:border-[#f97316] outline-none"
+                      >
+                        <option value={1}>1 Copy (Default)</option>
+                        <option value={5}>5 Copies</option>
+                        <option value={10}>10 Copies</option>
+                        <option value={15}>15 Copies</option>
+                        <option value={20}>20 Copies</option>
+                        <option value={25}>25 Copies</option>
+                        <option value={30}>30 Copies</option>
+                        <option value={40}>40 Copies</option>
+                        <option value={50}>50 Copies</option>
+                      </select>
+                      <p className="text-xs text-text-muted mt-1.5">
+                        Total to add: {accountsInput.split("\n").filter((l) => l.trim()).length * pasteMultiplier}
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
