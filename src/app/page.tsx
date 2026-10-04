@@ -59,25 +59,36 @@ const steps = [
   { icon: Download, title: "Play Offline", desc: "Login, disable Remote Play & Cloud, go offline and enjoy" },
 ];
 
-const stats = [
-  { label: "Games Available", value: "10,000+" },
-  { label: "Happy Customers", value: "50,000+" },
-  { label: "Average Rating", value: "4.8★" },
-  { label: "Keys Delivered", value: "100,000+" },
-];
+// Removed hardcoded stats array
 
 export default function HomePage() {
   const [featuredGames, setFeaturedGames] = useState<Game[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [realStats, setRealStats] = useState([
+    { label: "Games Available", value: "..." },
+    { label: "Happy Customers", value: "..." },
+    { label: "Average Rating", value: "..." },
+    { label: "Keys Delivered", value: "..." },
+  ]);
 
   useEffect(() => {
     Promise.all([
       fetch("/api/games?featured=true").then((r) => r.json()),
       fetch("/api/reviews?limit=6").then((r) => r.json()),
-    ]).then(([gamesData, reviewsData]) => {
+      fetch("/api/stats").then((r) => r.json()),
+    ]).then(([gamesData, reviewsData, statsData]) => {
       setFeaturedGames(Array.isArray(gamesData) ? gamesData : []);
       setReviews(Array.isArray(reviewsData) ? reviewsData : []);
+      
+      if (statsData && !statsData.error) {
+        setRealStats([
+          { label: "Games Available", value: statsData.gamesAvailable.toString() },
+          { label: "Happy Customers", value: statsData.happyCustomers.toString() },
+          { label: "Average Rating", value: statsData.averageRating },
+          { label: "Keys Delivered", value: statsData.keysDelivered.toString() },
+        ]);
+      }
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
@@ -256,7 +267,7 @@ export default function HomePage() {
       <section className="py-20 px-4 bg-[#0f1019]/50">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, i) => (
+            {realStats.map((stat, i) => (
               <AnimatedSection key={stat.label} delay={i * 0.1}>
                 <div className="text-center">
                   <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-[#f97316] to-[#eab308] bg-clip-text text-transparent mb-2">
